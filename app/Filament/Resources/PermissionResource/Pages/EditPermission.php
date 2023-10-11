@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\RoleResource\Pages;
+namespace App\Filament\Resources\PermissionResource\Pages;
 
-use App\Filament\Resources\RoleResource;
+use App\Filament\Resources\PermissionResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditRole extends EditRecord
+class EditPermission extends EditRecord
 {
-    protected static string $resource = RoleResource::class;
+    protected static string $resource = PermissionResource::class;
 
     protected function getActions(): array
     {
@@ -16,7 +16,6 @@ class EditRole extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-
     //EA 11 Oct 2023 - Redirect to list page after submission
     protected function getRedirectUrl(): string
     {

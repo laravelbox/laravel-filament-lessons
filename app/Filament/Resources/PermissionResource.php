@@ -2,27 +2,27 @@
 
 namespace App\Filament\Resources;
 
+//EA 11 Oct 2023 - Use permission model instead of default permission
+//EA 11 Oct 2023 - Added field for permission
+//EA 11 Oct 2023 - Added card for permission
 use Filament\Forms;
 use Filament\Tables;
-//EA 10 Oct 2023 - Use permission role model instead of default role
-//EA 10 Oct 2023 - Added field for permission role
-//EA 11 Oct 2023 - Added card for permission role
-//use App\Models\Role;
+//use App\Models\Permission;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
-use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Card;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\RoleResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\RoleResource\RelationManagers;
+use App\Filament\Resources\PermissionResource\Pages;
+use App\Filament\Resources\PermissionResource\RelationManagers;
 
-class RoleResource extends Resource
+class PermissionResource extends Resource
 {
-    protected static ?string $model = Role::class;
+    protected static ?string $model = Permission::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
@@ -30,10 +30,10 @@ class RoleResource extends Resource
     {
         return $form
             ->schema([
-                //EA 11 Oct 2023 - Added card for permission role
+                //EA 11 Oct 2023 - Added card for permission
                 Card::make()->schema([
-                    //EA 10 Oct 2023 - Added field for permission role
-                            TextInput::make('name')
+                    //EA 11 Oct 2023 - Added field for permission
+                    TextInput::make('name')
                             ->minLength(2)
                             ->maxLength(255)
                             ->required()
@@ -46,7 +46,7 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                //EA 10 Oct 2023 - Added column for permission role
+                //EA 11 Oct 2023 - Added column for permission
                 TextColumn::make('id'),
                 TextColumn::make('name'),
                 TextColumn::make('updated_at'),
@@ -72,9 +72,9 @@ class RoleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRoles::route('/'),
-            'create' => Pages\CreateRole::route('/create'),
-            'edit' => Pages\EditRole::route('/{record}/edit'),
+            'index' => Pages\ListPermissions::route('/'),
+            'create' => Pages\CreatePermission::route('/create'),
+            'edit' => Pages\EditPermission::route('/{record}/edit'),
         ];
     }    
 }

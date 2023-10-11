@@ -1,66 +1,230 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# About Laravel Filament Lessons
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Using Laravel + Filament to create web portal with mySQL database
 
-## About Laravel
+## Development Resources
+- [Install Laravel](#install-laravel).
+- [Set up Laravel Database Migration](#set-up-laravel-database-migration).
+- [Create Laravel Database Seeding](#create-laravel-database-seeding).
+- [Install Laravel Filament](#install-laravel-filament).
+- [Create Laravel Filament Resources](#create-laravel-filament-resources).
+- [Connect Laravel to Google Cloud SQL MySQL](#connect-laravel-to-google-cloud-sql-mysql).
+- [Install Laravel Debugger](#install-laravel-debugger)
+- [Laravel Filament Roles and Permissions](#laravel-filament-roles-and-permissions).
+- [Create Laravel Filament Relation Manager](#create-laravel-filament-relation-manager).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Install Laravel
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Create new laravel application (Install Docker first)
+```
+curl -s "https://laravel.build/example-app" | bash
+```
+2. If you do not specify which services you would like configured, a default stack of mysql, redis, meilisearch, mailpit, and selenium will be configured.
+```
+curl -s "https://laravel.build/example-app?with=mysql,redis" | bash
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. Start up laravel application
+```
+cd example-app && ./vendor/bin/sail up
+```
+Or:
+```
+cd example-app && docker compose up -d
+```
+4. Open docker-compose.yml and add phpmyadmin:
+```
+phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links:
+            - mysql:mysql
+        ports:
+            - 8080:80
+        environment:
+            MYSQL_USERNAME: "${DB_USERNAME}"
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+            PMA_HOST: mysql
+        networks:
+            - sail
+        depends_on:
+            - mysql
+```
+5. Open localhost http://localhost/ or http://localhost:80/
+6. Open phpmyadmin http://localhost:8080/
 
-## Learning Laravel
+### Set up Laravel Database Migration
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Create migration table
+```
+php artisan make:migration create_companies_table
+```
+2. Open the create migration file and add new columns
+3. Run command
+```
+php artisan migrate
+php artisan migrate: status
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. If migrate does not work, check DB_HOST in env file to change to mysql or localhost or 127.0.0.1 (check value of DB_HOST in config/database.php)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. To rollback, 
+```
+php artisan migrate:rollback
+```
 
-## Laravel Sponsors
+#### If there is an error:
+ 
+Edit env file
+```
+DB_HOST=127.0.0.1 - if running migrate, change to 127.0.0.1
+DB_HOST=mysql - if running laravel filament, change to mysql
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### To clear cache:
+```
+php artisan config:cache
+php artisan config:clear
+php artisan cache:clear
+```
 
-### Premium Partners
+#### To edit MAC Host:
+```
+sudo nano /etc/hosts
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+hosts:
+```
+127.0.0.1       localhost 
+255.255.255.255 broadcasthost 
+::1             localhost 
+127.0.0.1       mysql
+```
 
-## Contributing
+### Create Laravel Database Seeding
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Create seeder
+```
+php artisan make:seeder CompanySeeder
+```
+2. Run individually
+```
+php artisan db:seed php artisan db:seed --class=CompanySeeder
+```
+3. Run whole
+```
+php artisan migrate:fresh --seedphp artisan migrate:fresh --seed --seeder=CompanySeeder
+```
+4. Run rollback
+```
+php artisan migrate:rollback --path=/database/migrations/your-specific-migration.php
+php artisan migrate:refresh --step=1
+```
 
-## Code of Conduct
+### Install Laravel Filament
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Install Filament
+```
+composer require filament/filament:"^2.0"
+composer require doctrine/dbal --dev
+```
+2. Create new super user
+```
+php artisan make:filament-user
+php artisan make:filament-resource User --generate
+php artisan make:model User
+```
 
-## Security Vulnerabilities
+#### If "SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: select count(*) as aggregate from `users` where `email` =" error occurs:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+#Need to add to 127.0.0.1 mysql to sudo nano /etc/hosts so that the frontend can run
+#use mysql so that both migration and db access and frontend can run
+#DB_HOST=127.0.0.1 - if running migrate, change to 127.0.0.1
+#DB_HOST=mysql - if running laravel filament, change to mysql
+```
 
-## License
+Or check if the phpmyadmin has started up.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Create Laravel Filament Resources
+
+1. Create resource
+```
+php artisan make:filament-resource Driver
+php artisan make:filament-resource Driver --generate
+```
+
+2. Create model
+```
+php artisan make:model Driver
+```
+
+
+
+#### If index router error, clear the route cache:
+```
+php artisan route:clear
+```
+
+### Connect Laravel to Google Cloud SQL MySQL
+
+1. Go to Google Cloud SQL > {Instance} > Overview to get Public IP address
+https://console.cloud.google.com/sql/instances/first-project-db/overview
+
+2. Replace env variables for local environment to connect to  Google Cloud SQL's MySQL database
+```
+DB_CONNECTION=mysql
+DB_HOST=xx.xxx.xxx.xx #Connect to Google Cloud SQL - MySQL
+DB_PORT=3306
+DB_DATABASE=dbnameingooglecloudsql
+DB_USERNAME=user
+DB_PASSWORD=password
+```
+
+### Install Laravel Debugger
+
+1. Install debugbar and set env APP_DEBUG to true
+```
+composer require barryvdh/laravel-debugbar
+```
+
+2. Open config/app.php and add the service provider to providers
+```
+'providers' => [
+    Barryvdh\Debugbar\ServiceProvider::class,
+    ...
+]
+```
+
+3. Examples of debugging
+```
+Debugbar::info($object);
+Debugbar::error('Error!');
+Debugbar::warning('Watch out…');
+Debugbar::addMessage('Another message', 'mylabel');
+
+try {
+    throw new Exception('foobar');
+} catch (Exception $e) {
+    Debugbar::addThrowable($e);
+}
+
+```
+
+### Laravel Filament Roles and Permissions
+Reference: https://spatie.be/docs/laravel-permission/v5/installation-laravel
+
+1. Install the package via composer
+```
+composer require spatie/laravel-permission
+```
+
+2. More details at [Laravel Filament Roles and Permissions](docs/PERMISSIONS-ROLES.md)
+
+### Create Laravel Filament Relation Manager
+
+1. Create relation manager
+```
+php artisan make:filament-relation-manager CategoryResource message id
+```
+
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
