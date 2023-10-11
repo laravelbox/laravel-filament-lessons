@@ -70,7 +70,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    //EA 11 Oct 2023 - Changed timezone to sg
+    'timezone' => 'Asia/Singapore',
 
     /*
     |--------------------------------------------------------------------------

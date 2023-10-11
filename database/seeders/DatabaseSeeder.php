@@ -32,6 +32,14 @@ class DatabaseSeeder extends Seeder
         //password is password by default
         $role = Role::create(['name' => 'admin']);
         $user->assignRole($role);
+
+        //Created test user with no role?
+        /*
+        $user2 = User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'user@example.com',
+        ]);
+        */
         
     }
 }

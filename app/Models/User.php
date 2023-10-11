@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 //EA 10 Oct 2023 - Added permission roles
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
 
-class User extends Authenticatable
+//EA 10 Oct 2023 - Added user filament auth
+class User extends Authenticatable implements FilamentUser
 {
     //EA 10 Oct 2023 - Added permission roles
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -45,4 +47,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    //EA 10 Oct 2023 - Added user filament auth
+    public function canAccessFilament(): bool { 
+        return $this->hasRole('admin');
+        //return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail(); 
+    }
 }
