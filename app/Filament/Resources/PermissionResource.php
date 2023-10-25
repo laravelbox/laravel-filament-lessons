@@ -24,12 +24,19 @@ class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
-
+    //EA 25 Oct 2023 - Customise Navigation
+    //Setting Icons
+    protected static ?string $navigationIcon = 'heroicon-o-finger-print';
+    //Sorting navigation items
+    protected static ?int $navigationSort = 3;
+    //Grouping navigation items
+    protected static ?string $navigationGroup = 'Settings';
+   
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                //EA 25 Oct 2023 - Added ignore current record unique checking
                 //EA 11 Oct 2023 - Added card for permission
                 Card::make()->schema([
                     //EA 11 Oct 2023 - Added field for permission
@@ -37,7 +44,7 @@ class PermissionResource extends Resource
                             ->minLength(2)
                             ->maxLength(255)
                             ->required()
-                            ->unique()
+                            ->unique(ignoreRecord: true)
                 ])
             ]);
     }

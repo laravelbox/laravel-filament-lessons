@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\RoleResource\Pages;
 
-use App\Filament\Resources\RoleResource;
+//EA 25 Oct 2023 - Customise notification
 use Filament\Pages\Actions;
+use App\Filament\Resources\RoleResource;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditRole extends EditRecord
 {
@@ -22,4 +24,23 @@ class EditRole extends EditRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    //EA 25 Oct 2023 - Customise notification
+   /*
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'A role has been updated2 successfully.';
+    }
+    */
+
+    //EA 25 Oct 2023 - Customise notification
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Role updated')
+            ->body('The role has been updated successfully.');
+    }
+
+
 }

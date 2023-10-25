@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Filament\Resources;
-
+//EA 24 Oct 2023 - Updated password hashing and required
 //EA 11 Oct 2023 - Added card for permission user
 use Filament\Forms;
 use App\Models\User;
@@ -10,6 +10,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,12 +20,19 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    //EA 25 Oct 2023 - Customise Navigation
+    //Setting Icons
+    protected static ?string $navigationIcon = 'heroicon-o-user';
+    //Sorting navigation items
+    protected static ?int $navigationSort = 1;
+    //Grouping navigation items
+    protected static ?string $navigationGroup = 'Settings';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                //EA 24 Oct 2023 - Updated password hashing and required
                 //EA 11 Oct 2023 - Added card for permission
                 Card::make()->schema([
                     Forms\Components\TextInput::make('name')
@@ -37,7 +45,9 @@ class UserResource extends Resource
                     Forms\Components\DateTimePicker::make('email_verified_at'),
                     Forms\Components\TextInput::make('password')
                         ->password()
-                        ->required()
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->required(fn (string $context): bool => $context === 'create')
                         ->maxLength(255),
                 ])
             ]);

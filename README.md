@@ -15,7 +15,12 @@ Using Laravel + Filament to create web portal with mySQL database
 
 ### Install Laravel
 
-1. Create new laravel application (Install Docker first)
+Note: Install Docker Desktop first and open Docker on Mac using 
+```
+open -a Docker
+```
+
+1. Create new laravel application
 ```
 curl -s "https://laravel.build/example-app" | bash
 ```

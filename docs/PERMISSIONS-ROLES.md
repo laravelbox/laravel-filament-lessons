@@ -9,6 +9,11 @@ Reference: https://spatie.be/docs/laravel-permission/v5/installation-laravel
 - [Create Laravel Project and Install Filament](#create-laravel-project-and-install-filament)
 - [Install Permissions Package and Create Admin User](#install-perimssions-package-and-create-admin-user)
 - [Create Role Resource for Laravel Filament Permissions](#create-role-resource-for-laravel-filament-permissions)
+- [Create Permission and User Resources for Laravel Filament Permissions](#create-permission-and-user-resources-for-laravel-filament-permissions)
+- [Update Redirects, Notifications and Navigation](#update-redirects-notifications-and-navigation)
+
+
+
 ### Create Laravel Project and Install Filament
 - [Create Permission and User Resources for Laravel Filament Permissions](#create-permission-and-user-resources-for-laravel-filament-permissions)
 
@@ -193,6 +198,28 @@ protected function getRedirectUrl(): string
 }
 ```
 
+4. When editing, ignore the current record for unique checking
+
+Edit app/Filament/Resources/RoleResource.php:
+```
+ public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            //EA 25 Oct 2023 - Added ignore current record unique checking
+            //EA 11 Oct 2023 - Added card for permission role
+            Card::make()->schema([
+                //EA 10 Oct 2023 - Added field for permission role
+                        TextInput::make('name')
+                        ->minLength(2)
+                        ->maxLength(255)
+                        ->required()
+                        ->unique(ignoreRecord: true)
+            ])
+        ]);
+}
+```
+
 ### Create Permission and User Resources for Laravel Filament Permissions
 
 1. Run this command so that Filament can automatically generate the form and table for you, based on your model's database columns.
@@ -288,4 +315,81 @@ public static function form(Form $form): Form
 }
 
 
+```
+
+### Update Redirects, Notifications and Navigation
+
+1. Hashing password fields and handling password updates
+
+Edit app/Filament/Resources/UserResource.php:
+
+```
+use Illuminate\Support\Facades\Hash;
+...
+public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            //EA 24 Oct 2023 - Updated password hashing and required
+            //EA 11 Oct 2023 - Added card for permission
+            Card::make()->schema([
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\DateTimePicker::make('email_verified_at'),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create')
+                    ->maxLength(255),
+            ])
+        ]);
+}
+```
+
+2. Customizing the save notification title
+
+Edit app/Filament/Resources/RoleResource/Pages/CreateRole.php:
+```
+//EA 25 Oct 2023 - Customise notification title
+protected function getCreatedNotificationTitle(): ?string
+{
+    return 'A new role has been created successfully.';
+}
+```
+
+3. Customizing the save notification title and description
+
+Edit app/Filament/Resources/RoleResource/Pages/EditRole.php:
+```
+use Filament\Notifications\Notification;
+...
+//EA 25 Oct 2023 - Customise notification title
+protected function getSavedNotification(): ?Notification
+{
+    return Notification::make()
+        ->success()
+        ->title('Role updated')
+        ->body('The role has been updated successfully.');
+}
+```
+
+4. Customising Navigation
+
+Visit heroicons.com to get specified icon.
+
+Edit app/Filament/Resources/RoleResource.php
+```
+//EA 25 Oct 2023 - Customise Navigation
+//Setting Icons
+protected static ?string $navigationIcon = 'heroicon-o-finger-print';
+//Sorting navigation items
+protected static ?int $navigationSort = 2;
+//Grouping navigation items
+protected static ?string $navigationGroup = 'Shop';
 ```
